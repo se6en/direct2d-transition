@@ -185,7 +185,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CustomEffect.h" />
+    <ClInclude Include="CustomTransitionEffect.h" />
     <ClInclude Include="direct2d-transition-draw-ctrl.h" />
     <ClInclude Include="direct2d-transition.h" />
     <ClInclude Include="direct2d-transitionDlg.h" />
@@ -194,7 +194,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CustomEffect.cpp" />
+    <ClCompile Include="CustomTransitionEffect.cpp" />
     <ClCompile Include="direct2d-transition-draw-ctrl.cpp" />
     <ClCompile Include="direct2d-transition.cpp" />
     <ClCompile Include="direct2d-transitionDlg.cpp" />
@@ -215,15 +215,9 @@
     <Image Include="res\direct2d-transition.ico" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="CustomEffect.hlsl">
+    <FxCompile Include="CustomTransitionEffect.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

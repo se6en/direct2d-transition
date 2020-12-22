@@ -43,5 +43,15 @@ private:
    ComPtr<IWICFormatConverter>         m_pWicDestFormatConverter;
    ComPtr<ID2D1Bitmap1>                m_pDestD2DBitmap;
 
-   ComPtr<ID2D1Effect>                 m_customEffect;
+   ComPtr<IWICBitmapDecoder>           m_pWicMaskBitmapDecoder;
+   ComPtr<IWICBitmapFrameDecode>       m_pWicMaskBitmapFrameDecoder;
+   ComPtr<IWICFormatConverter>         m_pWicMaskFormatConverter;
+   ComPtr<ID2D1Bitmap1>                m_pMaskD2DBitmap;
+
+   ComPtr<IWICBitmapDecoder>           m_pWicElementBitmapDecoder;
+   ComPtr<IWICBitmapFrameDecode>       m_pWicElementBitmapFrameDecoder;
+   ComPtr<IWICFormatConverter>         m_pWicElementFormatConverter;
+   ComPtr<ID2D1Bitmap1>                m_pElementD2DBitmap;
+
+   ComPtr<ID2D1Effect>                 m_effectTransitionMask;
 };

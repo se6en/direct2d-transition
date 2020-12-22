@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "direct2d-transition-draw-ctrl.h"
-#include "CustomEffect.h"
+#include "CustomTransitionEffect.h"
 
 IMPLEMENT_DYNAMIC(CDirect2DTransitionDrawCtrl, CStatic)
 
 CDirect2DTransitionDrawCtrl::CDirect2DTransitionDrawCtrl()
 {
-   m_customEffect = nullptr;
+   m_effectTransitionMask = nullptr;
 }
 
 CDirect2DTransitionDrawCtrl::~CDirect2DTransitionDrawCtrl()
@@ -21,12 +21,12 @@ END_MESSAGE_MAP()
 
 void CDirect2DTransitionDrawCtrl::SetProgress(float fProgress)
 {
-   if (m_customEffect == nullptr)
+   if (m_effectTransitionMask == nullptr)
    {
       return;
    }
 
-   m_customEffect->SetValue(CUSTOM_PROP_PROGRESS, fProgress);
+   m_effectTransitionMask->SetValue(CUSTOM_TRANSITION_ALPHA, fProgress);
 
    Invalidate();
    UpdateWindow();
@@ -178,7 +178,84 @@ void CDirect2DTransitionDrawCtrl::CreateDeviceIndependentResources()
       hr = m_pD2DContext->CreateBitmapFromWicBitmap(m_pWicSrcFormatConverter.Get(), NULL, &m_pSrcD2DBitmap);
    }
 
+   // element bitmap
+   if (SUCCEEDED(hr))
+   {
+      hr = m_pWicFactory->CreateDecoderFromFilename(
+         L"Transition_Element.png",
+         nullptr,
+         GENERIC_READ,
+         WICDecodeMetadataCacheOnDemand,
+         &m_pWicElementBitmapDecoder);
+   }
+
+   if (SUCCEEDED(hr))
+   {
+      hr = m_pWicElementBitmapDecoder->GetFrame(0, &m_pWicElementBitmapFrameDecoder);
+   }
+
+   if (SUCCEEDED(hr))
+   {
+      hr = m_pWicFactory->CreateFormatConverter(&m_pWicElementFormatConverter);
+   }
+
+   if (SUCCEEDED(hr))
+   {
+      hr = m_pWicElementFormatConverter->Initialize(
+         m_pWicElementBitmapFrameDecoder.Get(),
+         GUID_WICPixelFormat32bppPBGRA,
+         WICBitmapDitherTypeNone,
+         nullptr,
+         0.0f,
+         WICBitmapPaletteTypeCustom
+      );
+   }
+
+   if (SUCCEEDED(hr))
+   {
+      hr = m_pD2DContext->CreateBitmapFromWicBitmap(m_pWicElementFormatConverter.Get(), NULL, &m_pElementD2DBitmap);
+   }
+
+   // mask bitmap
+   if (SUCCEEDED(hr))
+   {
+      hr = m_pWicFactory->CreateDecoderFromFilename(
+         L"Transition_Mask.png",
+         nullptr,
+         GENERIC_READ,
+         WICDecodeMetadataCacheOnDemand,
+         &m_pWicMaskBitmapDecoder);
+   }
+
+   if (SUCCEEDED(hr))
+   {
+      hr = m_pWicMaskBitmapDecoder->GetFrame(0, &m_pWicMaskBitmapFrameDecoder);
+   }
+
+   if (SUCCEEDED(hr))
+   {
+      hr = m_pWicFactory->CreateFormatConverter(&m_pWicMaskFormatConverter);
+   }
+
+   if (SUCCEEDED(hr))
+   {
+      hr = m_pWicMaskFormatConverter->Initialize(
+         m_pWicMaskBitmapFrameDecoder.Get(),
+         GUID_WICPixelFormat32bppPBGRA,
+         WICBitmapDitherTypeNone,
+         nullptr,
+         0.0f,
+         WICBitmapPaletteTypeCustom
+      );
+   }
+
+   if (SUCCEEDED(hr))
+   {
+      hr = m_pD2DContext->CreateBitmapFromWicBitmap(m_pWicMaskFormatConverter.Get(), NULL, &m_pMaskD2DBitmap);
+   }
+
    // destination bitmap
+
    if (SUCCEEDED(hr))
    {
       hr = m_pWicFactory->CreateDecoderFromFilename(
@@ -221,23 +298,98 @@ void CDirect2DTransitionDrawCtrl::CreateDeviceIndependentResources()
 
 void CDirect2DTransitionDrawCtrl::CreateDeviceResources()
 {
-   if (m_customEffect != nullptr)
+   if (m_effectTransitionMask != nullptr)
    {
       return;
    }
 
-   HRESULT hr = CustomEffect::Register(m_pD2DFactory.Get());
+   /*HRESULT hr = TransitionMaskEffect::Register(m_pD2DFactory.Get());
 
    if (SUCCEEDED(hr))
    {
-      hr = m_pD2DContext->CreateEffect(CLSID_CustomEffect, &m_customEffect);
+      hr = m_pD2DContext->CreateEffect(CLSID_TransitionMaskEffect, &m_effectTransitionMask);
    }
 
    if (SUCCEEDED(hr))
    {
-      m_customEffect->SetInput(0, m_pSrcD2DBitmap.Get());
-      m_customEffect->SetInput(1, m_pDestD2DBitmap.Get());
+      m_effectTransitionMask->SetInput(0, m_pSrcD2DBitmap.Get());
+      m_effectTransitionMask->SetInput(1, m_pMaskD2DBitmap.Get());
+   }*/
+
+   //// 1. source mask
+   //ComPtr<ID2D1Effect> sourceMaskEffect = nullptr;
+
+   //HRESULT hr = TransitionMaskEffect::Register(m_pD2DFactory.Get());
+
+   //if (SUCCEEDED(hr))
+   //{
+   //   hr = m_pD2DContext->CreateEffect(CLSID_TransitionMaskEffect, &sourceMaskEffect);
+   //}
+
+   //if (SUCCEEDED(hr))
+   //{
+   //   sourceMaskEffect->SetInput(0, m_pSrcD2DBitmap.Get());
+   //   sourceMaskEffect->SetInput(1, m_pMaskD2DBitmap.Get());
+   //}
+
+   //// 2. element mask
+   //ComPtr<ID2D1Effect> elementMaskEffect = nullptr;
+
+   //if (SUCCEEDED(hr))
+   //{
+   //   hr = m_pD2DContext->CreateEffect(CLSID_TransitionMaskEffect, &elementMaskEffect);
+   //}
+
+   //if (SUCCEEDED(hr))
+   //{
+   //   elementMaskEffect->SetInput(0, m_pElementD2DBitmap.Get());
+   //   elementMaskEffect->SetInput(1, m_pMaskD2DBitmap.Get());
+   //}
+
+   //// 3. blend source and element mask result
+
+   //if (SUCCEEDED(hr))
+   //{
+   //   hr = TransitionElementEffect::Register(m_pD2DFactory.Get());
+   //}
+
+   //if (SUCCEEDED(hr))
+   //{
+   //   hr = m_pD2DContext->CreateEffect(CLSID_TransitionElementEffect, &m_effectTransitionMask);
+   //}
+
+   //if (SUCCEEDED(hr))
+   //{
+   //   m_effectTransitionMask->SetInputEffect(0, sourceMaskEffect.Get());
+   //   m_effectTransitionMask->SetInputEffect(1, elementMaskEffect.Get());
+   //}
+   //if (SUCCEEDED(hr))
+   //{
+   //   hr = m_pD2DContext->CreateEffect(CLSID_D2D1Blend, &m_effectTransitionMask);
+   //}
+
+   //if (SUCCEEDED(hr))
+   //{
+   //   m_effectTransitionMask->SetInputEffect(0, sourceMaskEffect.Get());
+   //   m_effectTransitionMask->SetInputEffect(1, elementMaskEffect.Get());
+
+   //   //m_effectTransitionMask->SetValue(D2D1_BLEND_PROP_MODE, D2D1_BLEND_MODE_COLOR);
+   //}
+   HRESULT hr = CustomTransitionEffect::Register(m_pD2DFactory.Get());
+
+   if (SUCCEEDED(hr))
+   {
+      hr = m_pD2DContext->CreateEffect(CLSID_CustomTransitionEffect, &m_effectTransitionMask);
    }
+
+   if (SUCCEEDED(hr))
+   {
+      m_effectTransitionMask->SetInput(0, m_pSrcD2DBitmap.Get());
+      m_effectTransitionMask->SetInput(1, m_pMaskD2DBitmap.Get());
+      m_effectTransitionMask->SetInput(2, m_pElementD2DBitmap.Get());
+      m_effectTransitionMask->SetInput(3, m_pDestD2DBitmap.Get());
+   }
+
 }
 
 void CDirect2DTransitionDrawCtrl::OnSize(UINT nType, int cx, int cy)
@@ -344,9 +496,10 @@ void CDirect2DTransitionDrawCtrl::OnPaint()
 
    // draw dest bitmap
    //m_pD2DContext->DrawBitmap(m_pDestD2DBitmap.Get(), rectDestination, 1.f, D2D1_INTERPOLATION_MODE_LINEAR, rectSource);
-   if (m_customEffect != nullptr)
+
+   if (m_effectTransitionMask != nullptr)
    {
-      m_pD2DContext->DrawImage(m_customEffect.Get());
+      m_pD2DContext->DrawImage(m_effectTransitionMask.Get());
    }
 
    // We ignore D2DERR_RECREATE_TARGET here. This error indicates that the device

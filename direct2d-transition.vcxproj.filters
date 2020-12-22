@@ -33,7 +33,7 @@
     <ClInclude Include="direct2d-transition-draw-ctrl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CustomEffect.h">
+    <ClInclude Include="CustomTransitionEffect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,7 +50,7 @@
     <ClCompile Include="direct2d-transition-draw-ctrl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CustomEffect.cpp">
+    <ClCompile Include="CustomTransitionEffect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -70,7 +70,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="CustomEffect.hlsl">
+    <FxCompile Include="CustomTransitionEffect.hlsl">
       <Filter>Header Files</Filter>
     </FxCompile>
   </ItemGroup>
